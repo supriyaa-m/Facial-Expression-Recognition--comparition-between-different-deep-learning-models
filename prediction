@@ -1,5 +1,5 @@
 from keras.models import load_model         
-model=load_model('EMO_Model.hdf5’)                                   #load the model saved before
+model=load_model('XcepResnetM1.hdf5’)                                   #load the model saved before
 loss_and_metrics = model.evaluate(validation_dataset)                #check accuracy for validation set
 print(loss_and_metrics)
 
