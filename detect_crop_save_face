@@ -1,43 +1,26 @@
-imds = imageDatastore('Final_Data5', ...
-    'IncludeSubfolders',true, ...
-    'LabelSource','foldernames');
-% Total number of images. 
-numImages = numel(imds.Labels);
-%Creating a folder for processed images.
-rootDir = 'FaceDetected';
-mkdir(rootDir)
-% Total number of subfolders i.e classes.
-totFolders = numel(categories(imds.Labels));
-foldersNames = categories(imds.Labels);
-for n = 1:totFolders
-    mkdir(rootDir,foldersNames{n})
-end
-imds.Labels(1)
-count = 1;
-j = 1;
-for t = 1:numImages    
-    I = readimage(imds,t);
-    FaceDetect = vision.CascadeObjectDetector; 
-    FaceDetect.MergeThreshold = 7;
-    BB = step (FaceDetect, I);  
-    for i = 1: size (BB, 1)     
-      rectangle ( 'Position' , BB (i, :), 'LineWidth' , 3, 'LineStyle' ,...
-          '-' , 'EdgeColor' , 'r' );
-    end 
-    for i = 1: size (BB, 1)
-      I = imcrop (I, BB (i, :)); 
-      figure (3);
-      subplot (6, 6, i);
-      imshow (I); 
-      j = j + 1;
-      %imwrite (I,croppedimg,'jpg' )
-    end
-    subF = char(imds.Labels(t));
-    imageName = [sprintf('%d',count),'.jpg'];
-    fullFileName = fullfile(rootDir,subF,imageName);
-    
-    imwrite(I, fullFileName);
-    
-    fprintf('Detected %0.2f percent records\n',(i/numImages)*100);
-    
-    count = count+1;
+import glob 
+import cv2
+import sys
+import os
+filename=r'C:\Users\.....path…….\surprise' 
+os.mkdir('Cropped’)                     # To create  a new folder
+path=r’C:\....path…..\Cropped'
+def detect_face(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')     #First download Haarcascades xml file 
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.2, minNeighbors=5)
+    return faces
+i=0
+for img in glob.glob(filename+'/*.*'):
+    var_img = cv2.imread(img)
+    face = detect_face(var_img)
+    print(face)
+    if (len(face) == 0):
+        continue
+    for(ex, ey, ew, eh) in face:
+        crop_image = var_img[ey:ey+eh, ex:ex+ew]
+        cv2.imwrite(os.path.join(path,'new%04i.jpg' %i),crop_image)
+        cv2.imshow("cropped", crop_image)
+        cv2.waitKey(20) 
+    i=i+1
+cv2.destroyAllWindows()
